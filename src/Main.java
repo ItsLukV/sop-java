@@ -10,7 +10,7 @@ public class Main extends PApplet {
     private TxtBox showCellsCount;
 
     private Button StartPlayingBtn;
-    public static final int SCREEN_SIZE = 1200;
+    public static final int SCREEN_SIZE = 800;
 
     public static void main(String[] args) {
         PApplet.main("Main");
@@ -40,8 +40,12 @@ public class Main extends PApplet {
                 golEngine.tick(this);
                 golEngine.draw(this);
 
+                if (golEngine.getGameState() == GOLEngine.PlayingState.finished) {
+                    showCellsCount.updateTxt("Final Cell Count: " + str(golEngine.getAliveCells()));
+                } else {
+                    showCellsCount.updateTxt("Cell Count: " + str(golEngine.getAliveCells()));
+                }
                 showTurn.updateTxt("Turn: " + str(golEngine.getTurn()));
-                showCellsCount.updateTxt("Cell Count: " + str(golEngine.getAliveCells()));
 
                 showTurn.show(g);
                 showCellsCount.show(g);
@@ -51,6 +55,7 @@ public class Main extends PApplet {
 
     public void mouseClicked() {
         if (StartPlayingBtn.clicked(this)) {
+            golEngine.restart();
             gameState = GameState.Playing;
             return;
         }

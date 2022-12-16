@@ -2,25 +2,38 @@ import Buttons.RestartButton;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
+/**
+ * GOLEngine
+ */
 public class GOLEngine {
     private final newTiles hand;
     int[][] grid;
-    public static final int maxStage = 2;
-    private int stage = 0;
+    public static final int maxTurn = 100;
     private int turn = 0;
     public static final int newStage = 10;
     public static int boardSize = 200;
     private PlayingState playingState = PlayingState.start;
     private final int tileSize = Main.SCREEN_SIZE / boardSize;
     private final RestartButton restartButton;
+    private int stage;
 
+    /**
+     * Constructor for Game Of Life Engine
+     * @param g
+     */
     public GOLEngine(PGraphics g) {
         this.grid = new int[boardSize][boardSize];
         this.hand = new newTiles();
         clearGrid();
-        restartButton = new RestartButton(g.width / 2 - 100 / 2, g.height / 2 - 50 / 2, 100,50,"Restart");
+        restartButton = new RestartButton(g.width / 2 - 100 / 2, g.height / 2 - 50 / 2, 100, 50, "Restart");
     }
 
+    /**
+     * Show the next 10x10 grid of cells
+     * @param g Processing stuff
+     * @param x Mouse X pos
+     * @param y Mouse Y pos
+     */
     private void showHand(PApplet g, int x, int y) {
         int tileHandX = getTilePos(x);
         int tileHandY = getTilePos(y);
@@ -42,27 +55,51 @@ public class GOLEngine {
 
     }
 
+    /**
+     * Draws the game
+     * @param g
+     */
     public void draw(PApplet g) {
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
-                if (grid[i][j] == 1) g.rect(i * tileSize, j * tileSize, tileSize, tileSize);
+
+        switch (playingState) {
+            case newStage, evolving -> {
+                for (int i = 0; i < grid.length; i++) {
+                    for (int j = 0; j < grid[i].length; j++) {
+                        if (grid[i][j] == 1) g.rect(i * tileSize, j * tileSize, tileSize, tileSize);
+                    }
+                }
+            }
+            case finished -> {
+                restartButton.draw(g);
             }
         }
+
+
     }
 
+    /**
+     * Converts screen coordinate to grid array index
+     * @param e screen coordinate
+     * @return grid array index
+     */
     private int getTilePos(int e) {
         return (int) Math.floor((float) e / tileSize);
     }
 
+    /**
+     * Makes a new tick in the GOLEngine
+     * @param g
+     */
     public void tick(PApplet g) {
 
         switch (playingState) {
             case start -> showHand(g, g.mouseX, g.mouseY);
             case evolving -> {
-                if (!gameFinished()) {
+                if (gameFinished()) {
                     playingState = PlayingState.finished;
                     return;
-                };
+                }
+                ;
 
                 System.out.printf("Turn: %d | Stage: %d\n", turn, stage);
                 if (checkTurn()) {
@@ -79,26 +116,42 @@ public class GOLEngine {
             }
             case finished -> {
                 g.background(0);
-                restartButton.draw(g);
-                restart();
+                g.frameRate(60);
+
                 System.out.println("Game finished");
             }
         }
     }
 
-    private void restart() {
+    /**
+     * Restarts the GOLEngine
+     */
+    public void restart() {
+        clearGrid();
         turn = 0;
         stage = 0;
+        playingState = PlayingState.start;
     }
 
+    /**
+     * Checks if a newStage has begun
+     * @return true or false
+     */
     private boolean checkTurn() {
         return turn % newStage != 0;
     }
 
+    /**
+     * Checks if game finished
+     * @return
+     */
     private boolean gameFinished() {
-        return maxStage >= stage;
+        return maxTurn <= turn;
     }
 
+    /**
+     * @return the number of alive cells
+     */
     public int getAliveCells() {
         int e = 0;
         for (int[] i : grid) {
@@ -109,6 +162,9 @@ public class GOLEngine {
         return e;
     }
 
+    /**
+     * Begins the next generation
+     */
     private void nextGen() {
         int[][] gridFuture = new int[boardSize][boardSize];
         for (int i = 0; i < grid.length; i++) {
@@ -135,6 +191,12 @@ public class GOLEngine {
         }
     }
 
+    /**
+     * Returns the amount of Neighbors around X and Y
+     * @param x
+     * @param y
+     * @return
+     */
     private int Neighbors(int x, int y) {
         int sum = 0;
         for (int i = -1; i < 2; i++) {
@@ -147,6 +209,9 @@ public class GOLEngine {
         return sum - grid[x][y];
     }
 
+    /**
+     * Makes all slots in the grid "dead"
+     */
     public void clearGrid() {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
@@ -155,14 +220,19 @@ public class GOLEngine {
         }
     }
 
+    /**
+     * Canges the PlayingState of the GOLEnigne
+     * @param playingState
+     */
     public void changeState(PlayingState playingState) {
         this.playingState = playingState;
     }
 
-    public int[][] getGrid() {
-        return grid;
-    }
-
+    /**
+     * This makes the hand preview a part of the real grid
+     * @param x
+     * @param y
+     */
     private void confirmHand(int x, int y) {
         int tileHandX = getTilePos(x);
         int tileHandY = getTilePos(y);
@@ -184,9 +254,12 @@ public class GOLEngine {
         }
 
         turn++;
-        stage++;
     }
 
+    /**
+     * runs if the screen is pressed
+     * @param g
+     */
     public void clicked(PApplet g) {
         switch (playingState) {
             case start, newStage -> {
@@ -194,10 +267,14 @@ public class GOLEngine {
                 playingState = PlayingState.evolving;
                 g.frameRate(2);
             }
-            case finished -> {}
         }
     }
 
+    /**
+     * runs if a button other than the mouse is pressed
+     * @param g
+     * @param keyCode
+     */
     public void keyPressed(PApplet g, int keyCode) {
         if (keyCode == 32) {
             if (playingState != PlayingState.evolving) {
@@ -218,6 +295,10 @@ public class GOLEngine {
         return playingState;
     }
 
+    /**
+     * Returns the amount of turn in the game
+     * @return
+     */
     public int getTurn() {
         return turn;
     }
