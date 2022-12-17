@@ -1,11 +1,13 @@
-import Buttons.Button;
-import Buttons.StartButton;
-import processing.core.PApplet;
-import txtBoxs.TxtBox;
+package Game;
 
-public class Main extends PApplet {
-    GOLEngine golEngine;
-    GameState gameState;
+import Game.Buttons.Button;
+import Game.Buttons.StartButton;
+import processing.core.PApplet;
+import Game.txtBoxs.TxtBox;
+
+public class Game extends PApplet {
+    public GOLEngine golEngine;
+    public GameState gameState;
     private TxtBox showTurn;
     private TxtBox showCellsCount;
 
@@ -13,7 +15,7 @@ public class Main extends PApplet {
     public static final int SCREEN_SIZE = 800;
 
     public static void main(String[] args) {
-        PApplet.main("Main");
+        PApplet.main("Game.Game");
     }
 
     public void settings() {
@@ -54,13 +56,9 @@ public class Main extends PApplet {
     }
 
     public void mouseClicked() {
-        if (StartPlayingBtn.clicked(this)) {
-            golEngine.restart();
-            gameState = GameState.Playing;
-            return;
-        }
-        if (gameState == GameState.Playing) {
-            golEngine.clicked(this);
+        switch (gameState) {
+            case StartMenu -> StartPlayingBtn.clicked(this);
+            case Playing -> golEngine.clicked(this);
         }
     }
 

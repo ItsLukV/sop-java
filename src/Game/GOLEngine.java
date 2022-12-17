@@ -1,9 +1,11 @@
-import Buttons.RestartButton;
+package Game;
+
+import Game.Buttons.RestartButton;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
 /**
- * GOLEngine
+ * Game.GOLEngine
  */
 public class GOLEngine {
     private final newTiles hand;
@@ -13,7 +15,7 @@ public class GOLEngine {
     public static final int newStage = 10;
     public static int boardSize = 200;
     private PlayingState playingState = PlayingState.start;
-    private final int tileSize = Main.SCREEN_SIZE / boardSize;
+    private final int tileSize = Game.SCREEN_SIZE / boardSize;
     private final RestartButton restartButton;
     private int stage;
 
@@ -87,7 +89,7 @@ public class GOLEngine {
     }
 
     /**
-     * Makes a new tick in the GOLEngine
+     * Makes a new tick in the Game.GOLEngine
      * @param g
      */
     public void tick(PApplet g) {
@@ -124,7 +126,7 @@ public class GOLEngine {
     }
 
     /**
-     * Restarts the GOLEngine
+     * Restarts the Game.GOLEngine
      */
     public void restart() {
         clearGrid();
@@ -193,9 +195,6 @@ public class GOLEngine {
 
     /**
      * Returns the amount of Neighbors around X and Y
-     * @param x
-     * @param y
-     * @return
      */
     private int Neighbors(int x, int y) {
         int sum = 0;
@@ -222,7 +221,6 @@ public class GOLEngine {
 
     /**
      * Canges the PlayingState of the GOLEnigne
-     * @param playingState
      */
     public void changeState(PlayingState playingState) {
         this.playingState = playingState;
@@ -230,8 +228,6 @@ public class GOLEngine {
 
     /**
      * This makes the hand preview a part of the real grid
-     * @param x
-     * @param y
      */
     private void confirmHand(int x, int y) {
         int tileHandX = getTilePos(x);
@@ -258,22 +254,20 @@ public class GOLEngine {
 
     /**
      * runs if the screen is pressed
-     * @param g
      */
-    public void clicked(PApplet g) {
+    public void clicked(Game g) {
         switch (playingState) {
             case start, newStage -> {
                 confirmHand(g.mouseX, g.mouseY);
                 playingState = PlayingState.evolving;
                 g.frameRate(2);
             }
+            case finished -> restartButton.clicked(g);
         }
     }
 
     /**
      * runs if a button other than the mouse is pressed
-     * @param g
-     * @param keyCode
      */
     public void keyPressed(PApplet g, int keyCode) {
         if (keyCode == 32) {
@@ -297,7 +291,6 @@ public class GOLEngine {
 
     /**
      * Returns the amount of turn in the game
-     * @return
      */
     public int getTurn() {
         return turn;

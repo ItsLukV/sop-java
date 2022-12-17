@@ -1,4 +1,4 @@
-package txtBoxs;
+package Game.txtBoxs;
 
 import processing.core.PGraphics;
 

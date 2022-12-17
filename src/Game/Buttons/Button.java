@@ -1,5 +1,8 @@
-package Buttons;
+package Game.Buttons;
 
+import Game.GOLEngine;
+import Game.Game;
+import Game.GameState;
 import processing.core.PApplet;
 
 import java.awt.*;
@@ -36,8 +39,7 @@ public abstract class Button {
         g.text(txt,x,y,w,h);
         g.pop();
     }
-    public abstract void click(PApplet g);
-    public abstract boolean clicked(PApplet g);
+    public abstract void clicked(Game game);
     // Getter and Setter
     public void setTxtSize(int txtSize) {
         this.txtSize =txtSize;
