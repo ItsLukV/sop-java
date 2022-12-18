@@ -30,6 +30,13 @@ public class GOLEngine {
         restartButton = new RestartButton(g.width / 2 - 100 / 2, g.height / 2 - 50 / 2, 100, 50, "Restart");
     }
 
+    public void start() {
+        clearGrid();
+        turn = 0;
+        stage = 0;
+        playingState = PlayingState.start;
+    }
+
     /**
      * Show the next 10x10 grid of cells
      * @param g Processing stuff
@@ -119,8 +126,6 @@ public class GOLEngine {
             case finished -> {
                 g.background(0);
                 g.frameRate(60);
-
-                System.out.println("Game finished");
             }
         }
     }
@@ -168,10 +173,15 @@ public class GOLEngine {
      * Begins the next generation
      */
     private void nextGen() {
+        // Initializes gridfuture
         int[][] gridFuture = new int[boardSize][boardSize];
+
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
+
+                // Gets the neighbors of the slot
                 int Neighbor = Neighbors(i, j);
+
                 // Underpopulation
                 if (grid[i][j] == 1 && Neighbor < 2) {
                     gridFuture[i][j] = 0;
@@ -180,14 +190,18 @@ public class GOLEngine {
                 else if (grid[i][j] == 1 && Neighbor > 3) {
                     gridFuture[i][j] = 0;
                 }
-                // perfect population
+                // Birth
                 else if (grid[i][j] == 0 && Neighbor == 3) {
                     gridFuture[i][j] = 1;
+
+                    // Perfect population or dead cell with no neigbors
                 } else {
                     gridFuture[i][j] = grid[i][j];
                 }
             }
         }
+
+        // Copys the gridfuture to grid
         for (int i = 0; i < grid.length; i++) {
             System.arraycopy(gridFuture[i], 0, grid[i], 0, gridFuture[i].length);
         }

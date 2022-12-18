@@ -11,7 +11,7 @@ public class StartButton extends Button {
     @Override
     public void clicked(Game game) {
         if (bounds.contains(game.mouseX, game.mouseY)) {
-            game.golEngine.restart();
+            game.golEngine.start();
             game.gameState = GameState.Playing;
         }
     }

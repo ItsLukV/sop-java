@@ -11,7 +11,6 @@ public class RestartButton extends Button{
     public void clicked(Game game) {
         if (bounds.contains(game.mouseX, game.mouseY)) {
             game.golEngine.restart();
-            game.gameState = GameState.Playing;
         }
     }
 }
